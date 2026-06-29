@@ -1,0 +1,10 @@
+# Vietnamese Medical NER — pinned deps (Colab T4, fp16)
+# torch / torch-geometric are provided/installed in-Colab matched to its CUDA.
+transformers==4.44.2
+datasets==2.21.0
+seqeval
+pytorch-crf
+py_vncorenlp
+pandas
+numpy
+# torch-geometric  # install in-notebook (§10) pinned to the Colab CUDA build
