@@ -309,13 +309,6 @@ Run:
 cd /Users/trttung/Projects/llm/CS2230/gat-crf-vietmed-ner && \
 python <SCRATCH>/build_nb07.py && python - <<'PY'
 import json
-nb=json.load(open("VietMed_NER_07_phobert_vihealthbert_gradio.ipynb"))
-errs=sum(1 for i,c in enumerate(nb["cells"]) if c["cell_type"]=="code"
-         and not "".join(c["source"]).lstrip().startswith("!")
-         and (lambda s: (compile(s,"c","exec") and False) if _try(s) else True)("".join(c["source"])))
-PY
-python - <<'PY'
-import json
 nb=json.load(open("VietMed_NER_07_phobert_vihealthbert_gradio.ipynb")); e=0
 for i,c in enumerate(nb["cells"]):
     if c["cell_type"]!="code": continue
@@ -326,7 +319,7 @@ for i,c in enumerate(nb["cells"]):
 print(f"{len(nb['cells'])} cells, {e} syntax errors")
 PY
 ```
-Expected: `8 cells, 0 syntax errors`. (Ignore the first inline snippet if it errors — the second PY block is the authoritative check.)
+Expected: `8 cells, 0 syntax errors`.
 
 - [ ] **Step 5: Commit**
 
