@@ -38,10 +38,28 @@ The report must state this explicitly.
 
 - No syntactic dependency graph / VnCoreNLP `parse` annotator (explicitly deferred — effort).
 - No encoder fine-tuning of any kind in this notebook.
-- No XLM-R / ViHealthBERT rows, no cross-domain (PhoNER) eval. Single encoder: PhoBERT-base.
+- No XLM-R rows, no cross-domain (PhoNER) eval.
 - The previously trained **full-fine-tuned PhoBERT+Softmax** result is **not** the baseline
   here; if reported at all it is a separate "full-fine-tuning reference" row, never compared
   head-to-head against the frozen heads.
+
+## 3b. Addendum (2026-06-30) — two no-/low-cost performance levers
+
+After the initial build, two frozen-compatible improvements were added (both keep the encoder
+frozen, neither requires fine-tuning):
+
+- **Domain encoder (ViHealthBERT) frozen.** Default `CFG["encoder"]` is now
+  `demdecuong/vihealthbert-base-word` (Vietnamese medical pretraining) instead of vanilla
+  PhoBERT, for better frozen features on medical text. `vinai/phobert-base` remains a one-line
+  swap so the two encoders can be compared. Feature caches are keyed by encoder tag to avoid
+  collision. The "single encoder = PhoBERT-base" non-goal above is superseded by this.
+- **BIO-constrained CRF.** Illegal tag transitions (`O→I-X`, `B-X→I-Y`, `I-X→I-Y` with X≠Y,
+  and starting a sequence with `I-X`) are pinned to `-1e4` in the CRF transition/start matrices
+  and frozen (gradient masked to 0), so the CRF and GAT+CRF heads can never emit BIO-invalid
+  spans. Applies to the CRF-based heads only; Softmax (independent classification) is left as-is.
+
+Both are inference-/decode-side or domain-swap levers, so they do not change the "frozen
+encoder, only the head differs" fairness rule of the comparison.
 
 ## 4. Architecture & data flow
 
