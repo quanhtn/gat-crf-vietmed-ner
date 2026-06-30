@@ -61,8 +61,8 @@ Reuse the PhoBERT Softmax checkpoint, full fine-tune ViHealthBERT with the **sam
 compare entity-level F1 + error analysis, then a Gradio demo with an encoder picker.
 Spec: `docs/superpowers/specs/2026-06-30-phobert-vs-vihealthbert-softmax-gradio-design.md`''')
 
-code('''# §0 Setup
-!pip -q install "transformers==4.44.2" "datasets==2.21.0" seqeval pytorch-crf py_vncorenlp pandas gradio
+code('''!pip -q install "transformers==4.44.2" "datasets==2.21.0" seqeval pytorch-crf py_vncorenlp pandas gradio
+# §0 Setup  (the !pip line must stay first so the syntax-checker skips this cell)
 import os, random, numpy as np, torch
 def set_seed(s=42):
     random.seed(s); np.random.seed(s); torch.manual_seed(s); torch.cuda.manual_seed_all(s)
@@ -128,7 +128,7 @@ for i,c in enumerate(nb["cells"]):
 print(f"{len(nb['cells'])} cells, {errs} syntax errors")
 PY
 ```
-Expected: `5 cells, 0 syntax errors` (1 markdown + 4 code).
+Expected: `4 cells, 0 syntax errors` (1 markdown + 3 code; the §0 cell is skipped because its first line is `!pip`).
 
 - [ ] **Step 3: Commit**
 
@@ -319,7 +319,7 @@ for i,c in enumerate(nb["cells"]):
 print(f"{len(nb['cells'])} cells, {e} syntax errors")
 PY
 ```
-Expected: `8 cells, 0 syntax errors`.
+Expected: `7 cells, 0 syntax errors`.
 
 - [ ] **Step 5: Commit**
 
@@ -382,7 +382,7 @@ def build_softmax_model(cfg, tokenizer):
 - [ ] **Step 2: Regenerate + syntax-check**
 
 Run (same authoritative PY check as Task 2 Step 4).
-Expected: `10 cells, 0 syntax errors`.
+Expected: `9 cells, 0 syntax errors`.
 
 - [ ] **Step 3: Document the Colab gate (no code change)**
 
@@ -454,7 +454,7 @@ print("PhoBERT  test micro_f1 =", round(m_pho["micro_f1"], 4), " macro_f1 =", ro
 assert m_pho["micro_f1"] > 0.5, "PhoBERT load/preproc mismatch (expected ~0.8+)"''')
 ```
 
-- [ ] **Step 2: Regenerate + syntax-check** (authoritative PY check). Expected: `12 cells, 0 syntax errors`.
+- [ ] **Step 2: Regenerate + syntax-check** (authoritative PY check). Expected: `11 cells, 0 syntax errors`.
 
 - [ ] **Step 3: Commit**
 
@@ -520,7 +520,7 @@ print("ViHealthBERT test micro_f1 =", round(m_vih["micro_f1"], 4), " macro_f1 ="
 assert m_vih["micro_f1"] > 0.5, "ViHealthBERT training degenerate"''')
 ```
 
-- [ ] **Step 2: Regenerate + syntax-check** (authoritative PY check). Expected: `13 cells, 0 syntax errors`.
+- [ ] **Step 2: Regenerate + syntax-check** (authoritative PY check). Expected: `12 cells, 0 syntax errors`.
 
 - [ ] **Step 3: Commit**
 
@@ -668,7 +668,7 @@ err_df.to_csv(f'{RESULTS_DIR}/error_analysis_phobert_vs_vihealthbert.csv', index
 print("wrote error_analysis CSV:", len(err_df), "errors")''')
 ```
 
-- [ ] **Step 4: Regenerate + syntax-check** (authoritative PY check). Expected: `15 cells, 0 syntax errors`.
+- [ ] **Step 4: Regenerate + syntax-check** (authoritative PY check). Expected: `14 cells, 0 syntax errors`.
 
 - [ ] **Step 5: Commit**
 
@@ -783,7 +783,7 @@ demo = gr.Interface(
 demo.launch(share=True)''')
 ```
 
-- [ ] **Step 4: Regenerate + syntax-check** (authoritative PY check). Expected: `16 cells, 0 syntax errors`.
+- [ ] **Step 4: Regenerate + syntax-check** (authoritative PY check). Expected: `15 cells, 0 syntax errors`.
 
 - [ ] **Step 5: Commit**
 
