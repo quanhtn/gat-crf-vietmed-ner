@@ -41,7 +41,7 @@ To keep the baseline-vs-improved comparison fair and reproducible:
 
 ## How to run (Colab)
 
-1. Upload `VietMed_NER.ipynb` to Google Colab, set runtime to **GPU (T4)**.
+1. Upload `VietMed_NER_07_phobert_vihealthbert_gradio.ipynb` to Google Colab, set runtime to **GPU (T4)**.
 2. Run **§0 Setup** (pins deps, mounts Drive, sets seed).
 3. In **§1**, set `EXP_ID` to the row you want (one experiment per session — T4 free disconnects).
 4. Run **§4 verify gate** — must print `verify_roundtrip PASSED for 5/5 samples` before training.
@@ -61,7 +61,7 @@ The bug-prone pure functions (tag re-alignment, subword alignment, schema projec
 ## Repo layout
 
 ```
-VietMed_NER.ipynb                          # the single self-contained notebook
+VietMed_NER_07_phobert_vihealthbert_gradio.ipynb   # the self-contained notebook
 requirements.txt                           # pinned deps (torch/PyG installed in-Colab)
 docs/superpowers/specs/...-design.md       # design spec
 docs/superpowers/plans/...-ner.md          # 15-task implementation plan
