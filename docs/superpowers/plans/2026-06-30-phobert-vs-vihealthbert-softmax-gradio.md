@@ -375,7 +375,7 @@ from transformers import AutoModelForTokenClassification
 def build_softmax_model(cfg, tokenizer):
     model = AutoModelForTokenClassification.from_pretrained(
         cfg["encoder"], num_labels=len(LABEL_LIST), id2label=id2label, label2id=label2id)
-    model.roberta.resize_token_embeddings(len(tokenizer))
+    model.resize_token_embeddings(len(tokenizer))   # top-level call: encoder-attr agnostic, same result/shape
     return model''')
 ```
 
