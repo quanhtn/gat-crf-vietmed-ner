@@ -344,11 +344,14 @@ git commit -m "feat(nb07): reuse preprocess + dual-path tokenizer + unit tests"
 
 ```python
 code('''# §4 Verify (GATE) — roundtrip both tokenizer paths before any train/eval
-from transformers import AutoTokenizer
+from transformers import AutoTokenizer, RobertaTokenizerFast
 
 def load_tokenizer(cfg):
     if cfg["encoder"] == "vinai/phobert-base":
-        return AutoTokenizer.from_pretrained(cfg["encoder"], use_fast=True, add_prefix_space=True)
+        # MUST match nb05: RobertaTokenizerFast (byte-level, vocab=66119, is_fast=True).
+        # AutoTokenizer(use_fast=True) returns the slow PhobertTokenizer (64001), which both
+        # mismatches the saved checkpoint embedding and takes the wrong (slow) encode path.
+        return RobertaTokenizerFast.from_pretrained(cfg["encoder"], add_prefix_space=True)
     return AutoTokenizer.from_pretrained(cfg["encoder"], use_fast=False)   # ViHealthBERT slow
 
 def verify_roundtrip(cfg, tokenizer, n=5):
