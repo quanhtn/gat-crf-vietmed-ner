@@ -84,9 +84,14 @@ VietMed-NER (syllable BIO)
 6. **ViHealthBERT (train).** `train_and_eval`-style loop reused from nb05: lr=2e-5, AMP,
    30 epochs, early-stop patience 3, **same config as PhoBERT** (segment=True,
    max_len=256, batch=16). Save `02_vihealthbert_softmax.pt` and `.pt.best`. Eval on test.
-7. **Comparison.** 2-row table (PhoBERT / ViHealthBERT) of test micro/macro F1 +
-   `classification_report` per-entity for each, written to
-   `{RESULTS_DIR}/compare_phobert_vs_vihealthbert.csv`.
+7. **Comparison + error analysis.** 2-row table (PhoBERT / ViHealthBERT) of test
+   micro/macro F1 + `classification_report` per-entity for each, written to
+   `{RESULTS_DIR}/compare_phobert_vs_vihealthbert.csv`. Plus an **error analysis** reusing
+   nb05's `spans`/`classify_errors`: categorize each model's test errors into
+   **boundary / type / missing / spurious**, print a per-model count table, and write
+   `{RESULTS_DIR}/error_analysis_phobert_vs_vihealthbert.csv`. A few concrete example
+   sentences per category are printed to make the difference between the two encoders
+   interpretable.
 8. **Gradio app.** `gr.Dropdown(["PhoBERT","ViHealthBERT"])` + `gr.Textbox`. On submit:
    lazy-load (and cache) the chosen model+tokenizer; VnCoreNLP word-segment the input;
    tokenize via the same dual path; `argmax` over logits; map subword→word (first subword);
@@ -106,7 +111,9 @@ VietMed-NER (syllable BIO)
 2. PhoBERT: load checkpoint, eval test → micro-F1 in a sane range (≈0.8+, clearly not
    ~0) — confirms correct load + matched preprocessing.
 3. ViHealthBERT: training converges, checkpoint saved, test metrics produced.
-4. Comparison cell prints a 2-row table + per-entity reports and writes the CSV.
+4. Comparison cell prints a 2-row table + per-entity reports and writes the CSV; the
+   error-analysis cell prints boundary/type/missing/spurious counts per model, example
+   sentences, and writes its CSV.
 5. Gradio `share` link opens; a Vietnamese medical sentence renders highlighted spans;
    switching the encoder changes the output.
 
