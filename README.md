@@ -2,7 +2,7 @@
 
 A **graph-enhanced PhoBERT + GAT + CRF** model for **medical named entity recognition in Vietnamese**, benchmarked against strong baselines (PhoBERT/XLM-R/ViHealthBERT with Softmax/CRF heads). Includes a CRF-vs-Softmax ablation, zero-shot cross-domain evaluation, and a 4-category error analysis. Master coursework project, run on Google Colab (T4, free tier).
 
-> **Core contribution:** the improved **PhoBERT + GAT + CRF** model (a fully-connected token graph + Graph Attention layer fused before CRF decoding), compared head-to-head against the PhoBERT+CRF baseline at matched sequence length.
+> **Core contribution:** the improved **PhoBERT + GAT + CRF** model — a Graph Attention layer over the **syntactic dependency graph** (VnCoreNLP parse, edges from each token to its head word, residually fused with BERT features) before CRF decoding, compared head-to-head against the PhoBERT+CRF baseline at matched sequence length.
 
 ## What this does
 
@@ -27,6 +27,17 @@ A **graph-enhanced PhoBERT + GAT + CRF** model for **medical named entity recogn
 | 6 | best of above | — | — | cross-domain zero-shot (PhoNER) |
 
 **Headline ablations:** CRF vs Softmax (#1 vs #2); improved vs baseline at matched length (#2b vs #5).
+
+## Experimental protocol
+
+To keep the baseline-vs-improved comparison fair and reproducible:
+
+- **Controlled comparison.** The headline claim is **#5 (GAT+CRF) vs #2b (CRF)** — *same* encoder (PhoBERT), *same* `max_len=128`, *same* segmentation and `-100` alignment. Only the head differs, so any F1 gap is attributable to the dependency-graph GAT, not to sequence length or tokenization. Do **not** read #5 against #1/#2 (those run at `max_len=256`).
+- **Fixed training recipe** (identical across all rows unless noted): AdamW, `lr=2e-5`, weight decay 0.01, linear warmup 10%, AMP, up to 30 epochs, **early stopping** on validation micro-F1 (patience 3). Per-row `batch_size`/`grad_accum` keep the effective batch ≈ 16 within T4 memory.
+- **Model selection.** Best checkpoint = highest **validation** micro-F1; test metrics are reported **once** from that checkpoint (no test-set tuning).
+- **Metrics.** `seqeval` entity-level **strict** micro / macro / per-entity F1. Cross-domain (#6) projects both sides to the shared 7-type schema before scoring.
+- **Seeds.** Single fixed seed (`SEED=42`) for the default runs. For the headline #2b-vs-#5 comparison, report **≥3 seeds** (mean ± std) so the improvement is shown to exceed run-to-run variance.
+- **The dependency graph** is built only for the GAT row (other rows carry an identity/self-loop `dep_head` that is never used), so baselines incur no parser cost and stay directly comparable.
 
 ## How to run (Colab)
 
