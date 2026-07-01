@@ -97,7 +97,7 @@ Then for every encoder: subword-tokenize, keep the label on the **first subword*
 
 - **Softmax**: `AutoModelForTokenClassification.from_pretrained(encoder, num_labels=N)`.
 - **CRF**: encoder + `nn.Linear` emissions + `torchcrf.CRF` (batch_first). Loss = `-crf(emissions, safe_labels, mask)`; `-100` labels mapped to 0 and excluded via mask. Decode via `crf.decode`.
-- **GAT+CRF (improved)**: PhoBERT embeddings → `GATConv` over a fully-connected token graph → `MultiheadAttention` → `Linear` → CRF head. Same encoder + same CRF head as the baseline so the **only** delta is the GAT block.
+- **GAT+CRF (improved)**: PhoBERT embeddings → `GATConv` over a windowed token graph (each token edges to its ±`window` neighbors, default `window=8`) → `MultiheadAttention` → `Linear` → CRF head. Same encoder + same CRF head as the baseline so the **only** delta is the GAT block. Windowing cuts edges from O(L²) to O(L·window) — at `max_len=128` that's ~2.1k edges vs ~16.4k fully-connected, the main lever for T4 per-epoch training time. Setting `window ≥ max_len-1` recovers the original fully-connected graph exactly (verified in §T). Edges touching a padding position are dropped per-sample before the GAT call, and the whole batch is run through `GATConv` as one block-diagonal graph rather than one call per sample. `window` is a persisted buffer, so it round-trips correctly through `state_dict()`/checkpoint reload.
 
 `num_labels` always derived from the loaded dataset's label list.
 
@@ -120,7 +120,7 @@ Then for every encoder: subword-tokenize, keep the label on the **first subword*
 - Improved vs baseline (fair, matched length): **#2b (PhoBERT+CRF @128) vs #5 (PhoBERT+GAT+CRF @128)**.
 - #2 @256 is kept as the baseline's best reported number.
 
-GAT is O(L²) in edges → `max_len=128`, smaller batch + gradient accumulation if OOM.
+GAT uses a windowed graph (O(L·window), not O(L²)) at `max_len=128`; smaller batch + gradient accumulation if OOM.
 
 ---
 

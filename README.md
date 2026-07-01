@@ -2,7 +2,7 @@
 
 A **graph-enhanced PhoBERT + GAT + CRF** model for **medical named entity recognition in Vietnamese**, benchmarked against strong baselines (PhoBERT/XLM-R/ViHealthBERT with Softmax/CRF heads). Includes a CRF-vs-Softmax ablation, zero-shot cross-domain evaluation, and a 4-category error analysis. Master coursework project, run on Google Colab (T4, free tier).
 
-> **Core contribution:** the improved **PhoBERT + GAT + CRF** model (a fully-connected token graph + Graph Attention layer fused before CRF decoding), compared head-to-head against the PhoBERT+CRF baseline at matched sequence length.
+> **Core contribution:** the improved **PhoBERT + GAT + CRF** model (a windowed token graph — each token attends to its ±8 neighbors — + Graph Attention layer fused before CRF decoding), compared head-to-head against the PhoBERT+CRF baseline at matched sequence length.
 
 ## What this does
 
